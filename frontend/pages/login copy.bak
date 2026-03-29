@@ -1,0 +1,52 @@
+<template>
+  <div style="max-width: 400px; margin: 50px auto; font-family: sans-serif;">
+    <h1>Вход</h1>
+    <form @submit.prevent="handleLogin">
+      <div>
+        <label>Email:</label><br>
+        <input v-model="email" type="email" required style="width: 100%; margin-bottom: 10px;">
+      </div>
+      <div>
+        <label>Пароль:</label><br>
+        <input v-model="password" type="password" required style="width: 100%; margin-bottom: 20px;">
+      </div>
+      <button type="submit" :disabled="loading">
+        {{ loading ? 'Вход...' : 'Войти' }}
+      </button>
+      <p v-if="error" style="color: red;">{{ error }}</p>
+    </form>
+  </div>
+</template>
+
+<script setup>
+import { useAuthStore } from '@/stores/auth'
+
+const email = ref('test@test.com') // Для тестов
+const password = ref('123456')
+const loading = ref(false)
+const error = ref('')
+
+const authStore = useAuthStore()
+const api = useApi()
+
+const handleLogin = async () => {
+  loading.value = true
+  error.value = ''
+  try {
+    const response = await api.post('/auth/login', {
+      email: email.value,
+      password: password.value
+    })
+    
+    // Сохраняем токен (подстрой под структуру ответа твоего бэка, обычно response.data.token)
+    authStore.setToken(response.data.token)
+    
+    // Редирект на главную
+    await navigateTo('/')
+  } catch (err) {
+    error.value = 'Ошибка авторизации. Проверьте данные или бэкенд.'
+  } finally {
+    loading.value = false
+  }
+}
+</script>

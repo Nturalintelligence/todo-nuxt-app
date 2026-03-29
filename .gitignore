@@ -1,0 +1,15 @@
+node_modules/
+**/node_modules/
+
+.nuxt/
+.output/
+dist/
+.temp/
+
+.env
+*.log
+npm-debug.log*
+.DS_Store
+
+.idea/
+.vscode/
